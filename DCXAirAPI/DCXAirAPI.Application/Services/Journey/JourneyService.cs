@@ -1,4 +1,6 @@
-﻿using DCXAirAPI.Application.DTOs.ResponseFligth;
+﻿using DCXAirAPI.Application.DTOs.Journey;
+using DCXAirAPI.Application.DTOs.ResponseFligth;
+using DCXAirAPI.Application.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +11,20 @@ namespace DCXAirAPI.Application.Services.Journey
 {
     public class JourneyService
     {
-        public JourneyService()
+        private readonly IJsonRepository _jsonRepository;
+        public JourneyService(IJsonRepository jsonRepository)
         {
-            
+            _jsonRepository = jsonRepository;
         }
 
-        private async Task<List<ResponseFlightDTO>> getJourney()
+        private async Task<List<FlightDTO>> getJourney()
         {
-            string filePath = "./markets.json";
-            string jsonData = File.ReadAllText(filePath);
+            var result = _jsonRepository.GetRoutes().ToList();
+            return result;
+        }
+
+        private async Task<JourneyDTO> getNewRoute()
+        {
             return null;
         }
     }

@@ -15,10 +15,10 @@ namespace DCXAirAPI.Infrastructure.Repositories
             _jsonFilePath = jsonFilePath;
         }
 
-        public IEnumerable<ResponseFlightDTO> GetRoutes()
+        public IEnumerable<FlightDTO> GetRoutes()
         {
             string jsonContent = File.ReadAllText(_jsonFilePath);
-            return JsonConvert.DeserializeObject<IEnumerable<ResponseFlightDTO>>(jsonContent);
+            return JsonConvert.DeserializeObject<IEnumerable<FlightDTO>>(jsonContent);
         }
     }
 }

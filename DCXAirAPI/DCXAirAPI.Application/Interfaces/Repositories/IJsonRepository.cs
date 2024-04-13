@@ -4,6 +4,6 @@ namespace DCXAirAPI.Application.Interfaces.Repositories
 {
     public interface IJsonRepository
     {
-        IEnumerable<ResponseFlightDTO> GetRoutes();
+        IEnumerable<FlightDTO> GetRoutes();
     }
 }
