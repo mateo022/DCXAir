@@ -1,3 +1,5 @@
+using DCXAirAPI.Application.DTOs.ResponseFligth;
+using DCXAirAPI.Application.Interfaces.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DCXAirAPI.Controllers
@@ -12,22 +14,20 @@ namespace DCXAirAPI.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IJsonRepository _jsonRepository;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IJsonRepository jsonRepository)
         {
             _logger = logger;
+            _jsonRepository = jsonRepository;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<ResponseFlightDTO> Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            var resultJson = _jsonRepository.GetRoutes();
+
+            return resultJson;
         }
     }
 }
