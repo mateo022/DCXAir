@@ -98,24 +98,32 @@ namespace DCXAirAPI.Application.Services.Journey
         {
             try
             {
+                // Encuentra todas las rutas entre el origen y destino
                 var finder = _routeFinderService.FindAllRoutesBFS(graph, origin, destination);
 
-                double priceJourney = 0;
+                // Inicializa el precio total del viaje
+                double totalPrice = 0;
 
+                // Lista para guardar los vuelos convertidos
                 var convertedFlights = new List<FlightDTO>();
 
+                // Itera a través de cada vuelo en el finder
                 foreach (var flight in finder)
                 {
-                    double convertedPrice = (double)flight.Price;
+                    double flightPrice = (double)flight.Price;
+                    double convertedPrice = flightPrice;
+
+                    // Solo realiza la conversión de moneda si la moneda seleccionada es diferente de USD
                     if (!string.IsNullOrEmpty(currency) && currency != "USD")
                     {
-                        double? convertedAmount = await _currencyService.ConvertCurrencyAsync("USD", currency, flight.Price);
+                        double? convertedAmount = await ConvertPriceAsync(flightPrice, currency);
                         if (convertedAmount.HasValue)
                         {
                             convertedPrice = convertedAmount.Value;
                         }
                     }
 
+                    // Crea un nuevo FlightDTO con el precio convertido
                     var convertedFlight = new FlightDTO
                     {
                         Origin = flight.Origin,
@@ -123,15 +131,20 @@ namespace DCXAirAPI.Application.Services.Journey
                         Price = convertedPrice,
                         Transport = flight.Transport
                     };
+
+                    // Agrega el vuelo convertido a la lista
                     convertedFlights.Add(convertedFlight);
-                    priceJourney += convertedPrice;
+
+                    // Suma el precio convertido al precio total del viaje
+                    totalPrice += convertedPrice;
                 }
 
+                // Crea un JourneyDTO con los datos obtenidos
                 var journey = new JourneyDTO
                 {
                     Origin = origin,
                     Destination = destination,
-                    Price = priceJourney,
+                    Price = totalPrice,
                     Flights = convertedFlights
                 };
 
@@ -141,6 +154,19 @@ namespace DCXAirAPI.Application.Services.Journey
             {
                 throw new Exception("Error al calcular el precio del recorrido.", ex);
             }
+        }
+
+        // Función separada para convertir el precio de una moneda a otra
+        private async Task<double?> ConvertPriceAsync(double amount, string targetCurrency)
+        {
+            // Llama al servicio de conversión de moneda solo si la moneda objetivo es diferente de USD
+            Log.Information("LA MONEDA ES DIFERENTE USD");
+            if (!string.IsNullOrEmpty(targetCurrency) && targetCurrency != "USD")
+            {
+                return await _currencyService.ConvertCurrencyAsync("USD", targetCurrency, amount);
+            }
+            // Si la moneda objetivo es USD, no se realiza conversión y se retorna el mismo monto
+            return amount;
         }
         private Dictionary<string, List<FlightDTO>> GetGraph(List<FlightDTO> flightDTO)
         {
