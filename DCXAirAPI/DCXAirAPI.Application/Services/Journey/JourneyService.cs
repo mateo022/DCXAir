@@ -1,5 +1,7 @@
-﻿using DCXAirAPI.Application.DTOs.Journey;
+﻿using DCXAirAPI.Application.Cqrs.Journey.Queries;
+using DCXAirAPI.Application.DTOs.Journey;
 using DCXAirAPI.Application.DTOs.ResponseFligth;
+using DCXAirAPI.Application.Interfaces.Journey;
 using DCXAirAPI.Application.Interfaces.Repositories;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DCXAirAPI.Application.Services.Journey
 {
-    public class JourneyService
+    public class JourneyService : IJourneyService
     {
         private readonly IJsonRepository _jsonRepository;
         public JourneyService(IJsonRepository jsonRepository)
@@ -17,15 +19,21 @@ namespace DCXAirAPI.Application.Services.Journey
             _jsonRepository = jsonRepository;
         }
 
-        private async Task<List<FlightDTO>> getJourney()
+        private async Task<List<FlightDTO>> getFlights()
         {
             var result = _jsonRepository.GetRoutes().ToList();
             return result;
         }
 
-        private async Task<JourneyDTO> getNewRoute()
+        public async Task<JourneyDTO> getJourney(GetRouteQuery getRouteQuery)
         {
-            return null;
+            var flight = getFlights();
+
+
+            var journey = new JourneyDTO();
+        
+            return journey;
+
         }
     }
 }

@@ -27,7 +27,7 @@ namespace DCXAirAPI.Application.Cqrs.Journey.Queries
 
         public async Task<JourneyDTO> Handle(GetRouteQuery request, CancellationToken cancellationToken)
         {
-            return await _journeyService.GetRoute(request);
+            return await _journeyService.getJourney(request);
         }
     }
 }
