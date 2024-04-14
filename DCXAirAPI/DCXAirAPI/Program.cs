@@ -8,6 +8,7 @@ using DCXAirAPI.Application.Services.Currency;
 using DCXAirAPI.Application.Services.Journey;
 using DCXAirAPI.Application.Services.RouteFinderBFS;
 using DCXAirAPI.Infrastructure.Repositories;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,12 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Get
 builder.Services.AddCors();
 
 builder.Services.AddSwaggerGen();
+
+Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration).CreateLogger();
+
+builder.Host.UseSerilog();
+
 builder.Services.AddScoped<IJsonRepository, JsonRepository>(provider => new JsonRepository(Configuration["RouteJSON"]));
 builder.Services.AddScoped<IJourneyService, JourneyService>();
 builder.Services.AddScoped<IRouteFinderService, RouteFinderService>();
