@@ -1,0 +1,13 @@
+#componentContent {
+    min-height: 63.5vh;
+  }
+  
+  .h-100.row.noXMargin {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+  }
+  
+  .pageBody {
+    position: relative;
+  }
+  
