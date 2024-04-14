@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DCXAirAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class CurrencyController : ApiControllerBase
     {

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { FlightService } from '../../services/flight.service';
+import { SnackBarService } from '../../../shared/services/snackbar.service';
 
 @Component({
   selector: 'app-search-route',
@@ -9,12 +11,24 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, 
 export class SearchRouteComponent implements OnInit {
   form: FormGroup;
 
-  cities = ['City 1', 'City 2', 'City 3'];
+  cities: string[] = [];
   currencies = ['USD', 'EUR', 'GBP'];
 
-  constructor(private fb: FormBuilder) { }
+  readonly getLocationInformationObserver = {
+    next: (data: any[]) => this.getLocationsNext(data),
+    error: (errorCode: number) => this.getLocationsError(errorCode),
+  };
+
+  constructor(
+    private fb: FormBuilder,
+    private _flightService: FlightService,
+    private _snackbarService: SnackBarService
+  ) {  this._flightService.getAllLocations()
+    .subscribe(this.getLocationInformationObserver);
+    }
 
   ngOnInit(): void {
+   
     this.form = this.fb.group({
       origin: ['', Validators.required],
       destination: ['', Validators.required],
@@ -55,11 +69,18 @@ export class SearchRouteComponent implements OnInit {
     return null;
 }
 
-  // Manejo del envío del formulario
   onSubmit() {
     if (this.form.valid) {
       const formData = this.form.value;
       console.log('Form data:', formData);
     }
+  }
+
+  getLocationsNext(data: any[]) {
+    this.cities = data.map((location: { nameLocation: string }) => location.nameLocation);
+  }
+
+  getLocationsError(errorCode: number) {
+    this._snackbarService.openSnackBar("No se encontraron ciudades.");
   }
 }

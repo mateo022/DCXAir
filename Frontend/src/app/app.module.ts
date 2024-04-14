@@ -5,6 +5,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { BasicLayoutComponent } from './layouts/basic-layout/basic-layout.component';
 import { FlightModule } from './flight/flight.module';
+import { HttpClientModule } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 
 
@@ -14,12 +16,15 @@ import { FlightModule } from './flight/flight.module';
       BasicLayoutComponent
   ],
   providers: [
+  
+    provideAnimationsAsync()
   ],
   bootstrap: [AppComponent],
   imports: [
       BrowserModule,
       AppRoutingModule,
-      FlightModule
+      FlightModule,
+      HttpClientModule
   ]
 })
 export class AppModule { }
