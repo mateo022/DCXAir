@@ -2,6 +2,7 @@
 using DCXAirAPI.Application.DTOs.FlightGraph;
 using DCXAirAPI.Application.DTOs.Journey;
 using DCXAirAPI.Application.DTOs.ResponseFligth;
+using DCXAirAPI.Application.Interfaces.Currency;
 using DCXAirAPI.Application.Interfaces.Journey;
 using DCXAirAPI.Application.Interfaces.Repositories;
 using DCXAirAPI.Application.Interfaces.RouteFinderBFS;
@@ -13,12 +14,15 @@ namespace DCXAirAPI.Application.Services.Journey
         private readonly IJsonRepository _jsonRepository;
 
         private readonly IRouteFinderService _routeFinderService;
+        private readonly ICurrencyService _currencyService;
         public JourneyService(
             IJsonRepository jsonRepository,
-            IRouteFinderService routeFinderService)
+            IRouteFinderService routeFinderService,
+            ICurrencyService currencyService)
         {
             _jsonRepository = jsonRepository;
             _routeFinderService = routeFinderService;
+            _currencyService = currencyService;
         }
 
         private async Task<List<FlightDTO>> getFlights()
@@ -29,45 +33,67 @@ namespace DCXAirAPI.Application.Services.Journey
 
         public async Task<List<JourneyDTO>> getJourney(GetRouteQuery getRouteQuery)
         {
+            var listJourney = new List<JourneyDTO>();
 
-            var ListJourney = new List<JourneyDTO>();
-            var flights = getFlights();
+            var flights = await getFlights();
 
-            var graph = getGraph(flights.Result);
+            var graph = getGraph(flights);
 
-            var routeJourney = RouteJourney(graph, getRouteQuery.Origin, getRouteQuery.Destination);
+            var routeJourney = await RouteJourney(graph, getRouteQuery.Origin, getRouteQuery.Destination, getRouteQuery.Currency);
 
-            ListJourney.Add(routeJourney);
+            listJourney.Add(routeJourney);
 
             if (!getRouteQuery.IsOneWay)
             {
-                routeJourney = RouteJourney(graph, getRouteQuery.Destination, getRouteQuery.Origin);
-
-                ListJourney.Add(routeJourney);
+                routeJourney = await RouteJourney(graph, getRouteQuery.Destination, getRouteQuery.Origin, getRouteQuery.Currency);
+                listJourney.Add(routeJourney);
             }
 
-            return ListJourney;
-
+            return listJourney;
         }
 
 
-        private JourneyDTO RouteJourney(Dictionary<string, List<FlightDTO>> graph, string Origin, string Destination)
+        private async Task<JourneyDTO> RouteJourney(Dictionary<string, List<FlightDTO>> graph, string origin, string destination, string currency)
         {
-            var finder = _routeFinderService.FindAllRoutesBFS(graph, Origin, Destination);
+            var finder = _routeFinderService.FindAllRoutesBFS(graph, origin, destination);
 
-            var priceJourney = finder.Select(x => x.price).Sum();
+            double priceJourney = 0;
+            var convertedFlights = new List<FlightDTO>();
+
+            foreach (var flight in finder)
+            {
+                double convertedPrice = (double)flight.Price;
+                if (!string.IsNullOrEmpty(currency) && currency != "USD")
+                {
+                    double? convertedAmount = await _currencyService.ConvertCurrencyAsync("USD", currency, flight.Price);
+                    if (convertedAmount.HasValue)
+                    {
+                        convertedPrice = convertedAmount.Value;
+                    }
+                }
+
+                var convertedFlight = new FlightDTO
+                {
+                    Origin = flight.Origin,
+                    Destination = flight.Destination,
+                    Price = convertedPrice,
+                    Transport = flight.Transport
+                };
+
+                convertedFlights.Add(convertedFlight);
+                priceJourney += convertedPrice;
+            }
 
             var journey = new JourneyDTO
             {
-                Origin = Origin,
-                Destination = Destination,
+                Origin = origin,
+                Destination = destination,
                 Price = priceJourney,
-                Flights = finder
+                Flights = convertedFlights
             };
 
             return journey;
         }
-
         private Dictionary<string, List<FlightDTO>> getGraph(List<FlightDTO> flightDTO)
         {
             var graph = new Dictionary<string, List<FlightDTO>>();

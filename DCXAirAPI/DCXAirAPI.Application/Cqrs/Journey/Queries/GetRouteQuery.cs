@@ -15,7 +15,7 @@ namespace DCXAirAPI.Application.Cqrs.Journey.Queries
         public string Origin { get; set; }
         public string Destination { get; set; }
         public bool IsOneWay { get; set; }
-        
+        public string Currency { get; set; }
     }
 
     public class GetRouteQueryHandler : IRequestHandler<GetRouteQuery, List<JourneyDTO>>
