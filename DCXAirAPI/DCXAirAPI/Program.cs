@@ -2,10 +2,12 @@ using DCXAirAPI.Application.Cqrs.Journey.Queries;
 using DCXAirAPI.Application.DTOs.FlightGraph;
 using DCXAirAPI.Application.Interfaces.Currency;
 using DCXAirAPI.Application.Interfaces.Journey;
+using DCXAirAPI.Application.Interfaces.Location;
 using DCXAirAPI.Application.Interfaces.Repositories;
 using DCXAirAPI.Application.Interfaces.RouteFinderBFS;
 using DCXAirAPI.Application.Services.Currency;
 using DCXAirAPI.Application.Services.Journey;
+using DCXAirAPI.Application.Services.Location;
 using DCXAirAPI.Application.Services.RouteFinderBFS;
 using DCXAirAPI.Infrastructure.Repositories;
 using Serilog;
@@ -36,6 +38,8 @@ builder.Services.AddScoped<IJsonRepository, JsonRepository>(provider => new Json
 builder.Services.AddScoped<IJourneyService, JourneyService>();
 builder.Services.AddScoped<IRouteFinderService, RouteFinderService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+
 
 var app = builder.Build();
 

@@ -41,18 +41,15 @@ namespace DCXAirAPI.Application.Services.Currency
         }
         public async Task<List<CurrencyDTO>> GetAllowedCurrencies()
         {
-            // Usa la reflexión para obtener los valores del enum
+    
             List<string> allowedCurrencyNames = Enum.GetNames(typeof(CurrencyEnum)).ToList();
 
-            // Convierte cada nombre de moneda en un objeto CurrencyDTO
             List<CurrencyDTO> allowedCurrencies = new List<CurrencyDTO>();
             foreach (string currencyName in allowedCurrencyNames)
             {
                 CurrencyDTO currencyDTO = new CurrencyDTO();
-                // Supongamos que CurrencyDTO tiene una propiedad o constructor que acepta un nombre de moneda
                 currencyDTO.NameCurrency = currencyName;
 
-                // Añade el objeto CurrencyDTO a la lista
                 allowedCurrencies.Add(currencyDTO);
             }
 

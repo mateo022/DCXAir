@@ -1,12 +1,6 @@
 ﻿using DCXAirAPI.Application.DTOs.Journey;
 using DCXAirAPI.Application.Interfaces.Journey;
-using DCXAirAPI.Application.Services.Journey;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DCXAirAPI.Application.Cqrs.Journey.Queries
 {

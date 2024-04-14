@@ -1,13 +1,12 @@
 ﻿using DCXAirAPI.Application.Cqrs.Currency.Queries;
-using DCXAirAPI.Application.Cqrs.Journey.Queries;
-using MediatR;
+using DCXAirAPI.Application.Cqrs.Location;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DCXAirAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CurrencyController : ApiControllerBase
+    public class LocationController : ApiControllerBase
     {
         /// <summary>
         /// Se realiza consulta de ruta
@@ -15,7 +14,7 @@ namespace DCXAirAPI.Controllers
         /// <param name="query"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetCurrency([FromQuery] GetCurrencyQuery query)
+        public async Task<IActionResult> GetLocation([FromQuery] GetLocationQuery query)
         {
             return Ok(await Mediator.Send(query));
         }
