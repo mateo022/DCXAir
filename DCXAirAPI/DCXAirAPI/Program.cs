@@ -1,7 +1,10 @@
 using DCXAirAPI.Application.Cqrs.Journey.Queries;
+using DCXAirAPI.Application.DTOs.FlightGraph;
 using DCXAirAPI.Application.Interfaces.Journey;
 using DCXAirAPI.Application.Interfaces.Repositories;
+using DCXAirAPI.Application.Interfaces.RouteFinderBFS;
 using DCXAirAPI.Application.Services.Journey;
+using DCXAirAPI.Application.Services.RouteFinderBFS;
 using DCXAirAPI.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +25,7 @@ builder.Services.AddCors();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IJsonRepository, JsonRepository>(provider => new JsonRepository(Configuration["RouteJSON"]));
 builder.Services.AddScoped<IJourneyService, JourneyService>();
+builder.Services.AddScoped<IRouteFinderService, RouteFinderService>();
 
 var app = builder.Build();
 
