@@ -12,19 +12,29 @@ export class SearchRouteComponent implements OnInit {
   form: FormGroup;
 
   cities: string[] = [];
-  currencies = ['USD', 'EUR', 'GBP'];
+  currencies: string[] = [];
 
   readonly getLocationInformationObserver = {
     next: (data: any[]) => this.getLocationsNext(data),
     error: (errorCode: number) => this.getLocationsError(errorCode),
   };
 
+  readonly getCurrencyInformationObserver = {
+    next: (data: any[]) => this.getCurrenciesNext(data),
+    error: (errorCode: number) => this.getCurrenciesError(errorCode),
+  };
+
   constructor(
     private fb: FormBuilder,
     private _flightService: FlightService,
     private _snackbarService: SnackBarService
-  ) {  this._flightService.getAllLocations()
+  ) {  
+    
+    this._flightService.getAllLocations()
     .subscribe(this.getLocationInformationObserver);
+
+    this._flightService.getAllCurrencies()
+    .subscribe(this.getCurrencyInformationObserver);
     }
 
   ngOnInit(): void {
@@ -76,11 +86,26 @@ export class SearchRouteComponent implements OnInit {
     }
   }
 
+
   getLocationsNext(data: any[]) {
     this.cities = data.map((location: { nameLocation: string }) => location.nameLocation);
   }
 
   getLocationsError(errorCode: number) {
-    this._snackbarService.openSnackBar("No se encontraron ciudades.");
+    if (errorCode == 404) {
+      this._snackbarService.openSnackBar("No se encontraron ciudades disponibles.");
+    }
   }
+
+
+  getCurrenciesNext(data: any[]) {
+    this.currencies = data.map((location: { nameCurrency: string }) => location.nameCurrency);
+  }
+
+  getCurrenciesError(errorCode: number) {
+    if (errorCode == 404) {
+      this._snackbarService.openSnackBar("No se encontraron monedas disponibles.");
+    }
+  }
+
 }
