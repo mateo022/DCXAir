@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { FlightService } from '../../services/flight.service';
 import { SnackBarService } from '../../../shared/services/snackbar.service';
@@ -24,10 +24,16 @@ export class SearchRouteComponent implements OnInit {
     error: (errorCode: number) => this.getCurrenciesError(errorCode),
   };
 
+  readonly getJorneyInformationObserver = {
+    next: (data: any[]) => this.getJourneysNext(data),
+    error: (errorCode: number) => this.getJourneyError(errorCode),
+  };
   constructor(
     private fb: FormBuilder,
     private _flightService: FlightService,
-    private _snackbarService: SnackBarService
+    private _snackbarService: SnackBarService,
+    private el: ElementRef, 
+    private renderer: Renderer2
   ) {  
     
     this._flightService.getAllLocations()
@@ -42,7 +48,7 @@ export class SearchRouteComponent implements OnInit {
     this.form = this.fb.group({
       origin: ['', Validators.required],
       destination: ['', Validators.required],
-      isOneWay: [true],
+      isOneWay: ['', this.atLeastOneSelected],
       currency: ['USD', Validators.required]
     });
 
@@ -70,6 +76,18 @@ export class SearchRouteComponent implements OnInit {
     });
   }
 
+  atLeastOneSelected(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    console.log(value);
+    
+    // Si el valor es 'true' o 'false', entonces es válido
+    if (value === 'true' || value === 'false') {
+      
+        return null;
+    }
+    // Si el valor no es ni 'true' ni 'false', retorna un error
+    return { required: true };
+}
   differentFromOrigin(control: AbstractControl): { sameOriginDestination: boolean } | null {
     const originControl = this.form.get('origin');
     const origin = originControl ? originControl.value : null;
@@ -82,10 +100,27 @@ export class SearchRouteComponent implements OnInit {
   onSubmit() {
     if (this.form.valid) {
       const formData = this.form.value;
-      console.log('Form data:', formData);
+
+      this._flightService.getJourney(formData)
+      .subscribe(this.getJorneyInformationObserver);
+
     }
   }
 
+  onCircleClick(event: MouseEvent) {
+    const circleElement = event.target as HTMLElement;
+
+    // Verifica si el elemento tiene la clase 'animate'
+    if (!circleElement.classList.contains('animate')) {
+      // Agrega la clase 'animate' para iniciar la animación
+      this.renderer.addClass(circleElement, 'animate');
+
+      // Usa setTimeout para quitar la clase 'animate' después de 4 segundos
+      setTimeout(() => {
+        this.renderer.removeClass(circleElement, 'animate');
+      }, 4000);
+    }
+  }
 
   getLocationsNext(data: any[]) {
     this.cities = data.map((location: { nameLocation: string }) => location.nameLocation);
@@ -105,6 +140,18 @@ export class SearchRouteComponent implements OnInit {
   getCurrenciesError(errorCode: number) {
     if (errorCode == 404) {
       this._snackbarService.openSnackBar("No se encontraron monedas disponibles.");
+    }
+  }
+
+  getJourneysNext(data: any[]) {
+    //ENVIAR A LA OTRA PAGINA
+   console.log(data);
+   
+  }
+
+  getJourneyError(errorCode: number) {
+    if (errorCode == 404) {
+      this._snackbarService.openSnackBar("No se lograron encontrar vuelos disponibles.");
     }
   }
 
