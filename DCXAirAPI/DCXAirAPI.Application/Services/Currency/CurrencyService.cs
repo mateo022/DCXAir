@@ -1,23 +1,20 @@
-﻿using DCXAirAPI.Application.Interfaces.Currency;
+﻿using DCXAirAPI.Application.DTOs.Currency;
+using DCXAirAPI.Application.Interfaces.Currency;
+using DCXAirAPI.Domain.Enums.Currency;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DCXAirAPI.Application.Services.Currency
 {
-    public class CurrencyService: ICurrencyService
+    public class CurrencyService : ICurrencyService
     {
         private readonly HttpClient _httpClient;
 
         private readonly IConfiguration _configuration;
 
         public CurrencyService(
-             IConfiguration configuration) {
+             IConfiguration configuration)
+        {
             _configuration = configuration;
             this._httpClient = new HttpClient();
         }
@@ -42,10 +39,30 @@ namespace DCXAirAPI.Application.Services.Currency
 
             return jsonResponse?.conversion_result;
         }
+        public async Task<List<CurrencyDTO>> GetAllowedCurrencies()
+        {
+            // Usa la reflexión para obtener los valores del enum
+            List<string> allowedCurrencyNames = Enum.GetNames(typeof(CurrencyEnum)).ToList();
+
+            // Convierte cada nombre de moneda en un objeto CurrencyDTO
+            List<CurrencyDTO> allowedCurrencies = new List<CurrencyDTO>();
+            foreach (string currencyName in allowedCurrencyNames)
+            {
+                CurrencyDTO currencyDTO = new CurrencyDTO();
+                // Supongamos que CurrencyDTO tiene una propiedad o constructor que acepta un nombre de moneda
+                currencyDTO.NameCurrency = currencyName;
+
+                // Añade el objeto CurrencyDTO a la lista
+                allowedCurrencies.Add(currencyDTO);
+            }
+
+            return allowedCurrencies;
+        }
+        public class CurrencyConversionResponse
+        {
+            [JsonProperty("conversion_result")]
+            public double? conversion_result { get; set; }
+        }
     }
-    public class CurrencyConversionResponse
-    {
-        [JsonProperty("conversion_result")]
-        public double? conversion_result { get; set; }
-    }
+
 }

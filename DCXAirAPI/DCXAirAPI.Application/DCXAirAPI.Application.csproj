@@ -15,4 +15,8 @@
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DCXAirAPI.Domain\DCXAirAPI.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

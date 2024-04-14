@@ -13,6 +13,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DCXAirAPI.Domain", "DCXAirAPI.Domain\DCXAirAPI.Domain.csproj", "{7310CE26-7C7E-4C62-826D-660F81F56AF2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DCXAirAPI.Application", "DCXAirAPI.Application\DCXAirAPI.Application.csproj", "{D756F66B-33D3-457C-A8AD-34AB6A690547}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7310CE26-7C7E-4C62-826D-660F81F56AF2} = {7310CE26-7C7E-4C62-826D-660F81F56AF2}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DCXAirAPI.Infrastructure", "DCXAirAPI.Infrastructure\DCXAirAPI.Infrastructure.csproj", "{5CCE456A-22E5-4352-A4F1-42A3DC17FF81}"
 EndProject
