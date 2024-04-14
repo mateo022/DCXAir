@@ -27,28 +27,45 @@ namespace DCXAirAPI.Application.Services.Journey
             return result;
         }
 
-        public async Task<JourneyDTO> getJourney(GetRouteQuery getRouteQuery)
+        public async Task<List<JourneyDTO>> getJourney(GetRouteQuery getRouteQuery)
         {
 
-            var journey = new JourneyDTO();
+            var ListJourney = new List<JourneyDTO>();
             var flights = getFlights();
 
             var graph = getGraph(flights.Result);
 
-            var finder = _routeFinderService.FindAllRoutesBFS(graph, getRouteQuery.Origin, getRouteQuery.Destination);
+            var routeJourney = RouteJourney(graph, getRouteQuery.Origin, getRouteQuery.Destination);
+
+            ListJourney.Add(routeJourney);
+
+            if (!getRouteQuery.IsOneWay)
+            {
+                routeJourney = RouteJourney(graph, getRouteQuery.Destination, getRouteQuery.Origin);
+
+                ListJourney.Add(routeJourney);
+            }
+
+            return ListJourney;
+
+        }
+
+
+        private JourneyDTO RouteJourney(Dictionary<string, List<FlightDTO>> graph, string Origin, string Destination)
+        {
+            var finder = _routeFinderService.FindAllRoutesBFS(graph, Origin, Destination);
 
             var priceJourney = finder.Select(x => x.price).Sum();
 
-            journey = new JourneyDTO
+            var journey = new JourneyDTO
             {
-                Origin = getRouteQuery.Origin,
-                Destination = getRouteQuery.Destination,
+                Origin = Origin,
+                Destination = Destination,
                 Price = priceJourney,
                 Flights = finder
             };
 
             return journey;
-
         }
 
         private Dictionary<string, List<FlightDTO>> getGraph(List<FlightDTO> flightDTO)

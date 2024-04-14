@@ -7,6 +7,6 @@ namespace DCXAirAPI.Application.Interfaces.Journey
 {
     public interface IJourneyService
     {
-        Task<JourneyDTO> getJourney(GetRouteQuery getRouteQuery);
+        Task<List<JourneyDTO>> getJourney(GetRouteQuery getRouteQuery);
     }
 }

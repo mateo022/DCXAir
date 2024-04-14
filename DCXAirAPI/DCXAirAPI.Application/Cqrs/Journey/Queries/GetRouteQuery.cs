@@ -10,14 +10,15 @@ using System.Threading.Tasks;
 
 namespace DCXAirAPI.Application.Cqrs.Journey.Queries
 {
-    public class GetRouteQuery : IRequest<JourneyDTO>
+    public class GetRouteQuery : IRequest<List<JourneyDTO>>
     {
         public string Origin { get; set; }
         public string Destination { get; set; }
         public bool IsOneWay { get; set; }
+        
     }
 
-    public class GetRouteQueryHandler : IRequestHandler<GetRouteQuery,JourneyDTO>
+    public class GetRouteQueryHandler : IRequestHandler<GetRouteQuery, List<JourneyDTO>>
     {
         private readonly IJourneyService _journeyService;
         public GetRouteQueryHandler(IJourneyService journeyService)
@@ -25,7 +26,7 @@ namespace DCXAirAPI.Application.Cqrs.Journey.Queries
             _journeyService = journeyService;
         }
 
-        public async Task<JourneyDTO> Handle(GetRouteQuery request, CancellationToken cancellationToken)
+        public async Task<List<JourneyDTO>> Handle(GetRouteQuery request, CancellationToken cancellationToken)
         {
             return await _journeyService.getJourney(request);
         }
