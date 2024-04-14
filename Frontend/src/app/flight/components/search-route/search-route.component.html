@@ -1,0 +1,49 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Origin field -->
+    <div>
+        <label for="origin">Origin:</label>
+        <select id="origin" formControlName="origin">
+            <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+        </select>
+        <div *ngIf="form.get('origin')?.invalid && form.get('origin')?.touched">
+            Please select a valid origin.
+        </div>
+    </div>
+
+    <!-- Destination field -->
+    <div>
+        <label for="destination">Destination:</label>
+        <select id="destination" formControlName="destination">
+            <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+        </select>
+        <div *ngIf="form.get('destination')?.errors?.['sameOriginDestination'] && form.get('destination')?.touched">
+            Origin and destination must be different.
+        </div>
+        <div *ngIf="form.get('destination')?.invalid && form.get('destination')?.touched">
+            Please select a destination.
+        </div>
+    </div>
+
+    <!-- Checkbox selection -->
+    <div>
+        <input type="radio" id="oneWay" formControlName="isOneWay" value="true">
+        <label for="oneWay">One-way</label>
+    
+        <input type="radio" id="roundTrip" formControlName="isOneWay" value="false">
+        <label for="roundTrip">RoundTrip</label>
+    </div>
+
+    <!-- Currency selection -->
+    <div>
+        <label for="currency">Currency:</label>
+        <select id="currency" formControlName="currency">
+            <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+        </select>
+        <div *ngIf="form.get('currency')?.invalid && form.get('currency')?.touched">
+            Please select a valid currency.
+        </div>
+    </div>
+
+    <!-- Submit button -->
+    <button type="submit" [disabled]="form.invalid">Submit</button>
+</form>

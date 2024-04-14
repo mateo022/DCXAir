@@ -4,6 +4,7 @@ import { AppComponent } from './app.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { BasicLayoutComponent } from './layouts/basic-layout/basic-layout.component';
+import { FlightModule } from './flight/flight.module';
 
 
 
@@ -18,6 +19,7 @@ import { BasicLayoutComponent } from './layouts/basic-layout/basic-layout.compon
   imports: [
       BrowserModule,
       AppRoutingModule,
+      FlightModule
   ]
 })
 export class AppModule { }
