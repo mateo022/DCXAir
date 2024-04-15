@@ -2,7 +2,6 @@
     width: 100%;   
     display: block;
     text-align: center;
-    border: 2px solid blue;
 }
 .container .firstBox{
     display: flex;

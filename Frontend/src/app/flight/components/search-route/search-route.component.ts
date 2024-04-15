@@ -2,6 +2,8 @@ import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { FlightService } from '../../services/flight.service';
 import { SnackBarService } from '../../../shared/services/snackbar.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-search-route',
@@ -33,7 +35,10 @@ export class SearchRouteComponent implements OnInit {
     private _flightService: FlightService,
     private _snackbarService: SnackBarService,
     private el: ElementRef, 
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private router: Router,
+    private route: ActivatedRoute,
+    private _dataService: DataService
   ) {  
     
     this._flightService.getAllLocations()
@@ -78,8 +83,6 @@ export class SearchRouteComponent implements OnInit {
 
   atLeastOneSelected(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
-    console.log(value);
-    
     // Si el valor es 'true' o 'false', entonces es válido
     if (value === 'true' || value === 'false') {
       
@@ -146,6 +149,8 @@ export class SearchRouteComponent implements OnInit {
   getJourneysNext(data: any[]) {
     //ENVIAR A LA OTRA PAGINA
    console.log(data);
+   this._dataService.setData(data);
+   this.router.navigate(['flights'], { relativeTo: this.route });
    
   }
 
