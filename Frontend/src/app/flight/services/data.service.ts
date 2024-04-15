@@ -7,6 +7,7 @@ export class DataService {
 
   constructor() { }
   private data: any;
+  private currency: string;
   
   setData(data: any) {
     this.data = data;
@@ -14,5 +15,13 @@ export class DataService {
 
   getData() {
     return this.data;
+  }
+
+  setCurrency(currency:string){
+    this.currency = currency
+  }
+
+  getCurrency(){
+    return this.currency;
   }
 }

@@ -7,6 +7,7 @@ import { BasicLayoutComponent } from './layouts/basic-layout/basic-layout.compon
 import { FlightModule } from './flight/flight.module';
 import { HttpClientModule } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { SharedModule } from './shared/shared.module';
 
 
 
@@ -24,7 +25,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
       BrowserModule,
       AppRoutingModule,
       FlightModule,
-      HttpClientModule
+      HttpClientModule,
+      SharedModule
   ]
 })
 export class AppModule { }

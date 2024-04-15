@@ -1,12 +1,23 @@
-<div *ngFor="let journey of journeys" class="ticket">
-    <div class="journey-details">
-        <h2>{{ journey.origin }} - {{ journey.destination }}</h2>
-        <p>${{ journey.price }}</p>
-    </div>
-    <div class="flights">
-        <div *ngFor="let flight of journey.flights" class="flight">
-            <h4>{{ flight.origin }} - {{ flight.destination }}</h4>
-            <p>{{ flight.transport.flightCarrier }} {{ flight.transport.flightNumber }}</p>
+<div *ngIf="journeys && journeys.length > 0; else noData">
+    <div *ngFor="let journey of journeys" class="ticket">
+        <div class="journey-details">
+            <h2>{{ journey.origin }} - {{ journey.destination }}</h2>
+            <p>{{currency}} {{ formatPrice(journey.price, currency) }}</p>
+        </div>
+        <div class="flights">
+            <div *ngFor="let flight of journey.flights" class="flight">
+                <h4>{{ flight.origin }} - {{ flight.destination }}</h4>
+                <p>{{ flight.transport.flightCarrier }} {{ flight.transport.flightNumber }}</p>
+            </div>
         </div>
     </div>
+    <div class="return">
+        <button (click)="back()">Return to</button>
+    </div>
 </div>
+<ng-template #noData>
+    <div class="return">
+        <p>No data available.</p>
+        <button (click)="back()">Return to</button>
+    </div>
+</ng-template>

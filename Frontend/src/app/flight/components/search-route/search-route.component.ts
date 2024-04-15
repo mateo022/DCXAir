@@ -4,6 +4,7 @@ import { FlightService } from '../../services/flight.service';
 import { SnackBarService } from '../../../shared/services/snackbar.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataService } from '../../services/data.service';
+import { debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-search-route',
@@ -15,6 +16,7 @@ export class SearchRouteComponent implements OnInit {
 
   cities: string[] = [];
   currencies: string[] = [];
+  currentCurrency: string;
 
   readonly getLocationInformationObserver = {
     next: (data: any[]) => this.getLocationsNext(data),
@@ -34,78 +36,77 @@ export class SearchRouteComponent implements OnInit {
     private fb: FormBuilder,
     private _flightService: FlightService,
     private _snackbarService: SnackBarService,
-    private el: ElementRef, 
+    private el: ElementRef,
     private renderer: Renderer2,
     private router: Router,
     private route: ActivatedRoute,
     private _dataService: DataService
-  ) {  
-    
+  ) {
+
     this._flightService.getAllLocations()
-    .subscribe(this.getLocationInformationObserver);
+      .subscribe(this.getLocationInformationObserver);
 
     this._flightService.getAllCurrencies()
-    .subscribe(this.getCurrencyInformationObserver);
-    }
+      .subscribe(this.getCurrencyInformationObserver);
+  }
 
   ngOnInit(): void {
-   
-    this.form = this.fb.group({
-      origin: ['', Validators.required],
-      destination: ['', Validators.required],
-      isOneWay: ['', this.atLeastOneSelected],
-      currency: ['USD', Validators.required]
+     this.form = this.fb.group({
+        origin: ['', Validators.required],
+        destination: ['', Validators.required],
+        isOneWay: ['', this.atLeastOneSelected],
+        currency: ['USD', Validators.required]
     });
 
-    this.form.get('destination')?.setValidators([
-      Validators.required,
-      this.differentFromOrigin.bind(this)
-    ]);
-
     this.form.get('origin')?.valueChanges.subscribe((newOrigin) => {
-      const destinationControl = this.form.get('destination');
-      if (destinationControl?.value === newOrigin) {
-        destinationControl?.setValue(null);
-      } else {
-        destinationControl?.updateValueAndValidity();
-      }
+        const destinationControl = this.form.get('destination');
+        if (destinationControl && destinationControl.value === newOrigin) {
+            destinationControl.setValue(null, { emitEvent: false });
+            // Forzar validación para actualizar el estado del campo de destino
+            destinationControl.updateValueAndValidity();
+        }
     });
 
     this.form.get('destination')?.valueChanges.subscribe((newDestination) => {
-      const originControl = this.form.get('origin');
-      if (originControl?.value === newDestination) {
-        originControl?.setValue(null);
-      } else {
-        originControl?.updateValueAndValidity();
-      }
+        const originControl = this.form.get('origin');
+        if (originControl && originControl.value === newDestination) {
+            originControl.setValue(null, { emitEvent: false });
+            // Forzar validación para actualizar el estado del campo de origen
+            originControl.updateValueAndValidity();
+        }
     });
-  }
+}
 
   atLeastOneSelected(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
     // Si el valor es 'true' o 'false', entonces es válido
     if (value === 'true' || value === 'false') {
-      
-        return null;
+
+      return null;
     }
     // Si el valor no es ni 'true' ni 'false', retorna un error
     return { required: true };
-}
-  differentFromOrigin(control: AbstractControl): { sameOriginDestination: boolean } | null {
+  }
+  // Función differentFromOrigin revisada
+  differentFromOrigin(control: AbstractControl): ValidationErrors | null {
     const originControl = this.form.get('origin');
-    const origin = originControl ? originControl.value : null;
-    if (control.value === origin) {
-        return { sameOriginDestination: true };
+    const origin = originControl?.value;
+    const destination = control.value;
+
+    // Verifica si el origen y el destino son iguales
+    if (origin && destination && origin === destination) {
+      return { sameOriginDestination: true };
     }
+
     return null;
-}
+  }
 
   onSubmit() {
     if (this.form.valid) {
       const formData = this.form.value;
-
+      this.currentCurrency = formData.currency
       this._flightService.getJourney(formData)
-      .subscribe(this.getJorneyInformationObserver);
+        .subscribe(this.getJorneyInformationObserver);
 
     }
   }
@@ -147,11 +148,11 @@ export class SearchRouteComponent implements OnInit {
   }
 
   getJourneysNext(data: any[]) {
-    //ENVIAR A LA OTRA PAGINA
-   console.log(data);
-   this._dataService.setData(data);
-   this.router.navigate(['flights'], { relativeTo: this.route });
-   
+
+    this._dataService.setCurrency(this.currentCurrency)
+    this._dataService.setData(data);
+    this.router.navigate(['flights'], { relativeTo: this.route });
+
   }
 
   getJourneyError(errorCode: number) {

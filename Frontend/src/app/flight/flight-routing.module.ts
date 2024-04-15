@@ -11,6 +11,8 @@ const routes: Routes = [
     children: [
       {path: '', component: SearchRouteComponent, title: 'Flight'},
       {path: 'flights', component: FlightFoundComponent, title: 'Flight Found'},
+    { path: '', redirectTo: '', pathMatch: 'full' },
+
     ]
   }
 ];
