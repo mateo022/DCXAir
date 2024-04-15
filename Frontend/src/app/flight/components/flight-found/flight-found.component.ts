@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../services/data.service';
+import { Journey } from '../../models/flight.model';
 
 @Component({
   selector: 'app-flight-found',
@@ -8,10 +9,14 @@ import { DataService } from '../../services/data.service';
 })
 export class FlightFoundComponent implements OnInit{
 
+
+  journeys: Journey[] = [];
+
   constructor(private _dataService: DataService){}
 
   ngOnInit() {
     const data = this._dataService.getData();
-    console.log(data); // Aquí tienes los datos para usar en tu componente
+    this.journeys = data;
+    console.log(data);
   }
 }

@@ -5,4 +5,22 @@ class FlightInformationRequest {
     currency: string;
 }
 
-export {FlightInformationRequest}
+class Journey {
+    origin: string;
+    destination: string;
+    price: number;
+    flights: Flight[];
+}
+
+class Flight{
+    origin: string;
+    destination: string;
+    price: number;
+    transport: {
+        flightCarrier: string;
+        flightNumber: string;
+    }
+
+}
+
+export {FlightInformationRequest, Journey, Flight}
